@@ -1,1 +1,3 @@
-devicelist=['sw0014 192.168.1.14 admin bjzhyd2017','sw0013 192.168.1.13 admin bjzhyd2017']
+devicelist=[
+    'sw0014 192.168.1.14 admin 12345678'
+    ]

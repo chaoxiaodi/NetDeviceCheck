@@ -1,1 +1,5 @@
-cmdlist=['dis cu','dis int br']
+cmdlist=[
+    'display cpu-usage',
+    'display memory',
+    'display version'
+    ]

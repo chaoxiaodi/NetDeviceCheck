@@ -18,27 +18,37 @@ def fileopt(fname,cmdresult = ""):
     fo.write("\n")
     fo.close()
 
+#具体登录设备并执行命令逻辑
+def execcmd(dip,duser,dpwd,cinfo):
+    dlogininfo = {
+        'host': dip,
+        'username': duser,
+        'password': dpwd,
+        'device_type': 'hp_comware'  # hp_comware 为H3C设备支持类型；
+    }
+    netConn = ConnectHandler(**dlogininfo)
+    output = netConn.send_command(cinfo)
+    return output
+
 #读取设备列表，以及需要执行的命令，并调用文件操作函数
 def checkConf():
     for dinfo in deviceInfo.devicelist:
         dinfolist=dinfo.split()
-        dname=dinfolist[0]
-        dip=dinfolist[1]
-        duser=dinfolist[2]
-        dpwd=dinfolist[3]
+        dname=dinfolist[0]  #设备名称
+        dip=dinfolist[1]    #设备ip
+        duser=dinfolist[2]  #设备用户名
+        dpwd=dinfolist[3]   #设备密码
         fileInfo=resultDir+nowday+"-"+dname+".txt"
-        fileopt(fileInfo)
+        fileopt(fileInfo,"Check Time:"+nowday)
         for cinfo in cmdInfo.cmdlist:
-            cmd=cinfo
-            dlogininfo ={
-                'host': dip,
-                'username': duser,
-                'password': dpwd,
-                'device_type': 'hp_comware' #hp_comware 为H3C设备支持类型；
-            }
-            netConn = ConnectHandler(**dlogininfo)
-            output = netConn.send_command(cinfo)
+            des="#\n<"+dname+">"+cinfo+'\n##'
+            fileopt(fileInfo,des)
+            output = execcmd(dip,duser,dpwd,cinfo)
             fileopt(fileInfo,output)
 
+def pxls():
+    pass
+
 checkConf()
+pxls
 
