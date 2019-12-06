@@ -9,8 +9,9 @@ from xlwt import *
 
 # 定义时间作为配置文件输出信息
 nowday=time.strftime("%Y-%m-%d-%H%M%S")
-#定义文件输出目录
+# 定义文件输出目录信息
 resultDir = os.path.abspath('.') + '\outputFile\\'
+
 # 文件操作函数，把对设备的操作输出到文件逻辑实现
 def file_opt( fname,cmdresult = "" ):
     fo = open(fname,"a+")
@@ -20,7 +21,6 @@ def file_opt( fname,cmdresult = "" ):
 
 #根据检查的提取的信息生成excel表格
 def write_xls(fname, infodct):
-
     xlsbook = xlwt.Workbook()  # 创建表格
     swcheckres = xlsbook.add_sheet('SWCheckResult', cell_overwrite_ok=True)  # 创建表格的某一分页
     # 设置列宽
@@ -39,6 +39,7 @@ def write_xls(fname, infodct):
     swcheckres.write(0, 3, '检查结果', xlsStyle.sheethead)
     #表固定格式
     i = 0
+    # 根据字典循环写入excel表格
     for key in infodct.keys():
         # k 具体检查项的数量，后期增加后可以直接修改相乘的数字即可
         k = i * 7
@@ -60,11 +61,12 @@ def write_xls(fname, infodct):
         swcheckres.write(k + 6, 3, infodct[key]['routes'], xlsStyle.stylecinfo)
         swcheckres.write(k + 7, 3, infodct[key]['vlannum'], xlsStyle.stylecinfo)
 
+        # 保存表格
         xlsbook.save(fname)
         # i 判断循环几次要在表里增加几次对应内容
         i += 1
 
-# 获取命令执行结果里的关键参数
+# 获取命令执行结果里的关键参数，并添加到字典，输出表格用
 def getmaininfo( dname, dip, cinfo, output, infodct ):
     infodct["dip"] = dip
     if cinfo == 'display version':
@@ -111,6 +113,7 @@ def getmaininfo( dname, dip, cinfo, output, infodct ):
 # 读取设备列表，以及需要执行的命令，并调用文件操作函数
 def checkConf():
     print("设备巡检开始，请稍后···\n巡检结果会保存到outputfile文件夹!")
+    # 设备检查结果字典定义
     infodctres = {}
     for dinfo in deviceInfo.devicelist:
         dinfolist = dinfo.split()
@@ -119,7 +122,8 @@ def checkConf():
         duser = dinfolist[2]  #设备用户名
         dpwd = dinfolist[3]   #设备密码
         file_info = resultDir+nowday+"-"+dname+".txt"
-        file_opt(file_info,"Check Time:"+nowday)
+        file_opt(file_info, "Check Time:"+nowday)
+        # netmiko模块登录信息配置
         dlogininfo = {
             'host': dip,
             'username': duser,
@@ -127,21 +131,26 @@ def checkConf():
             'device_type': 'hp_comware'  # hp_comware 为H3C设备支持类型；
         }
         net_conn = ConnectHandler(**dlogininfo)
+        # 临时字典定义，接收返回的分析数据
         infodct = {}
         for cinfo in cmdInfo.cmdlist:
             des="#\n<"+dname+">"+cinfo+'\n##'
+            # 调用保存命令执行结果的函数
             file_opt(file_info,des)
             output = net_conn.send_command(cinfo)
+            # 调用分析命令关键参数函数
             infodct = getmaininfo(dname, dip, cinfo, output, infodct)
+            # 调用保存命令执行结果的函数
             file_opt(file_info, output)
         net_conn.disconnect()
+        # 更新检查结果字典
         infodctres.update({
             dname : infodct
         })
+    # 表格输出文件名定义
     xls_file = resultDir+nowday+'巡检结果.xls'
     write_xls(xls_file, infodctres)
     print("巡检完成！你可以到outputfile文件夹查看结果！")
 
-checkConf()
-
-
+if __name__ == '__main__':
+    checkConf()
