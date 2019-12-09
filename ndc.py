@@ -37,7 +37,7 @@ def write_xls(fname, infodct):
     swcheckres.write(0, 1, '管理地址', xlsStyle.sheethead)
     swcheckres.write(0, 2, '检查项', xlsStyle.sheethead)
     swcheckres.write(0, 3, '检查结果', xlsStyle.sheethead)
-    #表固定格式
+    # 循环参数i
     i = 0
     # 根据字典循环写入excel表格
     for key in infodct.keys():
@@ -60,7 +60,6 @@ def write_xls(fname, infodct):
         swcheckres.write(k + 5, 3, infodct[key]['cpu-usage'], xlsStyle.stylecinfo)
         swcheckres.write(k + 6, 3, infodct[key]['routes'], xlsStyle.stylecinfo)
         swcheckres.write(k + 7, 3, infodct[key]['vlannum'], xlsStyle.stylecinfo)
-
         # 保存表格
         xlsbook.save(fname)
         # i 判断循环几次要在表里增加几次对应内容
@@ -113,6 +112,8 @@ def getmaininfo( dname, dip, cinfo, output, infodct ):
 # 读取设备列表，以及需要执行的命令，并调用文件操作函数
 def checkConf():
     print("设备巡检开始，请稍后···\n巡检结果会保存到outputfile文件夹!")
+    # 表格输出文件名定义
+    xls_file = resultDir + nowday + '巡检结果.xls'
     # 设备检查结果字典定义
     infodctres = {}
     for dinfo in deviceInfo.devicelist:
@@ -147,8 +148,7 @@ def checkConf():
         infodctres.update({
             dname : infodct
         })
-    # 表格输出文件名定义
-    xls_file = resultDir+nowday+'巡检结果.xls'
+    # 调用表格输出函数对提取的关键参数进行输出
     write_xls(xls_file, infodctres)
     print("巡检完成！你可以到outputfile文件夹查看结果！")
 
