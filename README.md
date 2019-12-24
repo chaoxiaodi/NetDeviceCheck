@@ -28,7 +28,9 @@ ps：设备需要开启SSH登录并允许列表里的用户登录<br />
 修改登录并执行命令逻辑；加快程序运行速度；
 完成对设备命令进行的分析结果
 
+# 运行结果截图
 
+![ndcrunpng](https://github.com/chaoxiaodi/NetDeviceCheck/blob/master/ndc-result.png) <br />
 
 
 PS：如果各位有想增加分析的内容可以提一下 
